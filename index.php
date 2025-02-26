@@ -1,7 +1,21 @@
 <?php
 session_start();
-$conn = new mysqli("localhost", "root", "", "diegogo");
-if ($conn->connect_error) die("Conexión fallida: " . $conn->connect_error);
+
+$servername = "bdatahgyey2fmuqqzysf-mysql.services.clever-cloud.com"; 
+$username = "ugb4sst7ni1x6mnn";
+$password = "XUGVtJC9X7DkbHiNMKhi"; 
+$database = "bdatahgyey2fmuqqzysf"; 
+
+// Crear conexión
+$conn = new mysqli($servername, $username, $password, $database);
+
+// Verificar conexión
+if ($conn->connect_error) {
+    die("Conexión fallida: " . $conn->connect_error);
+}
+
+echo "Conexión exitosa";
+
 
 $conn->query("CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -896,6 +910,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <form method="POST">
                                         <button type="submit" name="logout" style="border: none; margin: 20px; padding: 10px 40px; width: auto; overflow: visible; outline: 0; cursor: pointer; background: rgba(219, 14, 21, .2); color: inherit; font: inherit; line-height: normal; text-transform: uppercase;">Logout</button>
                                     </form>
+                                    <form method="POST">
+                                        <button type="submit" name="view_comments" style="border: none; margin: 20px; padding: 10px 40px; width: auto; overflow: visible; outline: 0; cursor: pointer; background: rgba(219, 14, 21, .2); color: inherit; font: inherit; line-height: normal; text-transform: uppercase;">View My Comments</button>
+                                    </form>
+
+                                    <?php
+                                    if (isset($_POST['view_comments'])) {
+                                        $user_id = $conn->query("SELECT id FROM users WHERE username = '{$_SESSION['user']}'")->fetch_assoc()['id'];
+                                        $result = $conn->query("SELECT comment FROM comments WHERE user_id = '$user_id'");
+                                        if ($result->num_rows > 0) {
+                                            echo "<script>alert('";
+                                            while ($row = $result->fetch_assoc()) {
+                                                echo htmlspecialchars($row['comment']) . "\\n";
+                                            }
+                                            echo "');</script>";
+                                        } else {
+                                            echo "<script>alert('burro ni haz guardado nada.');</script>";
+                                        }
+                                    }
+                                    ?>
                                 <?php else: ?>
                                     <b>Welcome</b> — Please enter your credentials to access the system.
                                     <br>
